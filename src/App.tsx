@@ -87,7 +87,7 @@ const App = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Gitub
+          Github
         </a>
       </header>
     </div>
