@@ -116,6 +116,7 @@ const ManualGithub = () => {
       name: string
     }) =>
       _.throttle(async () => {
+        // https://www.apollographql.com/docs/react/api/apollo-client/#ApolloClient.query
         await client
           .query({
             query: QUERY2,
@@ -183,16 +184,42 @@ const ManualGithub = () => {
                   (
                     { node, size }: { node: any; size: number },
                     index: number
-                  ) => (
-                    <div style={{ background: node.color }} key={index}>
-                      {node.name}{" "}
-                      {Number((size / totalLanguageBytes) * 100).toFixed(1)}%
-                    </div>
-                  )
+                  ) => {
+                    /**
+                     * doing some magic
+                     */
+                    const { color: colorHex, name } = node
+                    const hexString: string = _.replace(colorHex, "#", "0x")
+                    // console.log("hexString", hexString)
+
+                    const hexToInt16: number = _.parseInt(hexString, 16)
+                    // console.log("hexToInt16", hexToInt16)
+
+                    const dark: string = "#" + (hexToInt16 - 50000).toString(16)
+                    const mid: string = "#" + hexToInt16.toString(16)
+                    const light: string =
+                      "#" + (hexToInt16 + 50000).toString(16)
+
+                    /**
+                     * end
+                     */
+
+                    return (
+                      <div
+                        style={{
+                          background: `linear-gradient(-90deg, ${light} 0%, ${mid} 10%, ${mid} 90%, ${dark} 100%)`,
+                        }}
+                        key={index}
+                      >
+                        {name}{" "}
+                        {Number((size / totalLanguageBytes) * 100).toFixed(1)}%
+                      </div>
+                    )
+                  }
                 )}
               </div>
             ) : (
-              <>no data</>
+              <>no data {STAR}</>
             )}
             <div>
               <button
